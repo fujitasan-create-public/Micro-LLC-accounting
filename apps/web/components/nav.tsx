@@ -9,8 +9,9 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
   {
     title: "日々の取引",
     items: [
+      ["/expenses", "経費の入力"],
+      ["/journals/new", "仕訳の入力（振替など）"],
       ["/journals", "仕訳の一覧・検索"],
-      ["/journals/new", "仕訳の入力"],
       ["/attachments", "証憑（領収書・請求書）"],
       ["/imports", "明細CSVの取込"],
       ["/recurring", "定型仕訳"],
@@ -34,18 +35,20 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
       ["/reports", "帳票"],
     ],
   },
+  { title: "書類", items: [["/documents", "書類管理"]] },
   {
     title: "設定",
     items: [
       ["/setup", "初期設定"],
       ["/masters", "科目・取引先・口座"],
-      ["/settings", "税率などの設定・エクスポート"],
+      ["/settings", "税率・基準額"],
+      ["/backup", "バックアップ"],
       ["/help", "ヘルプ"],
     ],
   },
 ];
 
-/** 上部ヘッダーと左メニュー。レイアウトのグリッドに直接並べる */
+/** 左メニュー */
 export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -54,20 +57,11 @@ export function Nav() {
     .filter((h) => (h === "/" ? pathname === "/" : pathname === h || pathname.startsWith(h + "/")))
     .sort((a, b) => b.length - a.length)[0];
   return (
-    <>
-      <header className="header">
-        <button className="nav-toggle" onClick={() => setOpen(!open)} aria-label="メニュー">
-          ☰
-        </button>
-        <Link href="/" className="title">
-          マイクロ法人会計
-        </Link>
-        <span className="spacer" />
-        <Link href="/help" className="help">
-          ヘルプ
-        </Link>
-      </header>
-      <nav className={`sidebar${open ? " open" : ""}`} onClick={() => setOpen(false)}>
+    <nav className={`sidebar${open ? " open" : ""}`}>
+      <button className="nav-toggle" onClick={() => setOpen(!open)}>
+        ☰ メニュー
+      </button>
+      <div className="nav-body" onClick={() => setOpen(false)}>
         {GROUPS.map((g) => (
           <div key={g.title || "home"} className="nav-group">
             {g.title ? <div className="nav-group-title">{g.title}</div> : null}
@@ -78,7 +72,7 @@ export function Nav() {
             ))}
           </div>
         ))}
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }

@@ -25,7 +25,7 @@ INSERT OR IGNORE INTO accounts (code, name, category, statement_section, default
 ('180', 'ソフトウェア',       'asset',     '無形固定資産',         'P10', 0, 1),
 ('190', '一括償却資産',       'asset',     '投資その他の資産',     'P10', 0, 1),
 -- 負債
-('200', '未払金',             'liability', '流動負債',             'NT',  1, 1),
+('200', '未払金',             'liability', '流動負債',             'NT',  0, 1),
 ('210', '未払費用',           'liability', '流動負債',             'NT',  0, 1),
 ('220', '預り金（源泉所得税）','liability','流動負債',             'NT',  0, 1),
 ('221', '預り金（住民税）',   'liability', '流動負債',             'NT',  0, 1),
