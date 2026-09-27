@@ -158,3 +158,34 @@ async def create_housing_journals(hid: str, body: HousingJournalIn, db: Database
     imputed = await _imputed(db, h)
     warnings.extend(imputed["warnings"])
     return {"created": created, "warnings": warnings}
+
+
+class HousingAutomateIn(BaseModel):
+    payment_account_id: str
+    pay_day: int = Field(default=27, ge=1, le=31)
+    start_month: str = Field(pattern=r"^\d{4}-\d{2}$")
+
+
+@router.post("/housings/{hid}/automate", status_code=201)
+async def automate_housing(hid: str, body: HousingAutomateIn, db: Database = Depends(get_db)):
+    """家賃の引落し（と、振込で受け取る場合は役員からの徴収）を、毎月自動で計上する定型仕訳として登録する。"""
+    from routers.imports import TemplateIn, TemplateLine, create_template_record
+
+    h = await _get(db, hid)
+    pa = await masters.get_payment_account(db, body.payment_account_id)
+    if not pa:
+        raise not_found("口座・支払手段")
+    end_month = h["contract_end"][:7]
+    total = h["monthly_rent"] + h["monthly_common_fee"]
+    ids = [await create_template_record(db, TemplateIn(
+        name=f"社宅家賃（{h['address']}）", day_of_month=body.pay_day, description=f"社宅家賃 {h['address']}",
+        counterparty_id=h["landlord_id"], payment_account_id=pa["id"], start_month=body.start_month, end_month=end_month,
+        lines=[TemplateLine(side="debit", account_code=RENT_ACCOUNT, amount=total, tax_code=RESIDENTIAL_RENT_TAX_CODE),
+               TemplateLine(side="credit", account_code=pa["linked_account_code"], amount=total, tax_code="NT")]))]
+    if h["collection_method"] == "transfer" and h["collection_amount"] > 0:
+        ids.append(await create_template_record(db, TemplateIn(
+            name=f"社宅家賃の役員負担分（{h['address']}）", day_of_month=body.pay_day, description="社宅家賃の役員負担分",
+            counterparty_id=h["landlord_id"], payment_account_id=pa["id"], start_month=body.start_month, end_month=end_month,
+            lines=[TemplateLine(side="debit", account_code=pa["linked_account_code"], amount=h["collection_amount"], tax_code="NT"),
+                   TemplateLine(side="credit", account_code=RENT_ACCOUNT, amount=h["collection_amount"], tax_code=RESIDENTIAL_RENT_TAX_CODE)])))
+    return {"template_ids": ids}

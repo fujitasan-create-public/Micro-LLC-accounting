@@ -17,3 +17,11 @@ class Default(WorkerEntrypoint):
         import asgi  # type: ignore[import-not-found]
 
         return await asgi.fetch(app, request.js_object, self.env)
+
+    async def scheduled(self, controller, env=None, ctx=None):
+        """毎日の定期実行: 計上日が来た定型仕訳（家賃の引落しなど）を自動で計上する。"""
+        from common import today
+        from db import D1Database
+        from services.recurring import auto_post
+
+        await auto_post(D1Database((env or self.env).DB), today())

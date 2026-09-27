@@ -22,6 +22,7 @@ ROUTER_MODULES = [
     "routers.reports",
     "routers.closing",
     "routers.documents",
+    "routers.dashboard",
 ]
 
 

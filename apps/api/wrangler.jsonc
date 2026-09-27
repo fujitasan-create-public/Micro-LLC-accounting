@@ -6,6 +6,8 @@
   "compatibility_flags": ["python_workers"],
   // 公開URLを持たせない（AD-04）。web からの Service Binding でのみ呼ばれる
   "workers_dev": false,
+  // 定型仕訳の自動計上（UTC。日本時間の毎日0時30分）
+  "triggers": { "crons": ["30 15 * * *"] },
   "d1_databases": [
     {
       "binding": "DB",
