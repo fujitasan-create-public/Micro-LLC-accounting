@@ -35,6 +35,8 @@ venv/
 .ruff_cache/
 *.egg-info/
 python_modules/
+src/vendor/
+apps/*/src/vendor/
 .venv-workers/
 
 # ---- ローカル実行時のデータ（会計データ・証憑・バックアップ） ----

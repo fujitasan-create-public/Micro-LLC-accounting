@@ -74,7 +74,8 @@ class R2Storage:
         if obj is None:
             return None
         buf = await obj.arrayBuffer()
-        return bytes(buf.to_py())
+        # ランタイムのバージョンにより JsProxy（ArrayBuffer）か memoryview のどちらかで返る
+        return bytes(buf.to_py()) if hasattr(buf, "to_py") else bytes(buf)
 
     async def exists(self, key: str) -> bool:
         return (await self._bucket.head(key)) is not None

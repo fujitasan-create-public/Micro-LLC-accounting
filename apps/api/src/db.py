@@ -127,7 +127,7 @@ def _to_py(value: Any) -> Any:
 
 
 class D1Database:
-    """【要検証】Pyodide からの D1 呼び出しの型変換。"""
+    """Pyodide から D1 を呼ぶ。wrangler dev（workerd）で動作確認済み。"""
 
     def __init__(self, binding: Any):
         self._db = binding
@@ -159,10 +159,10 @@ class D1Database:
     async def batch(self, statements: list[Statement]) -> None:
         if not statements:
             return
-        from pyodide.ffi import to_js  # type: ignore[import-not-found]
-
+        # Python Workers の SDK は env.DB を Python のラッパーで包んでいるため、
+        # 文は JS の配列ではなく Python のリストのまま渡す（JS 配列に入れると一時的なプロキシが先に破棄される）
         prepared = [self._prepare(sql, params) for sql, params in statements]
         try:
-            await self._db.batch(to_js(prepared))
+            await self._db.batch(prepared)
         except Exception as e:
             raise DatabaseError(str(e)) from e

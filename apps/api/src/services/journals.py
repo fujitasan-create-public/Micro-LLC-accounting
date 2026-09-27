@@ -124,6 +124,16 @@ async def void_entry(db: Database, entry_id: str, reversal_date: date | None = N
     from common import today
 
     rev_date = reversal_date or today()
+    if reversal_date is None:
+        # 今日が締め済みの期間なら、まだ締めていない最初の期間の期首日に逆仕訳を作る
+        p = await masters.period_for_date(db, rev_date.isoformat())
+        if p is None or p["status"] == "closed":
+            open_period = await db.first(
+                "SELECT * FROM fiscal_periods WHERE status != 'closed' AND end_date >= ? ORDER BY start_date LIMIT 1",
+                [entry["transaction_date"]])
+            if open_period:
+                start, end = date.fromisoformat(open_period["start_date"]), date.fromisoformat(open_period["end_date"])
+                rev_date = min(max(rev_date, start), end)
     rev_id, _ = await create_entry(
         db,
         transaction_date=rev_date,
