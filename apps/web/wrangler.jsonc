@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "accounting-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-27",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [
+    // api Worker（公開URLなし）への Service Binding（AD-04）
+    { "binding": "API", "service": "accounting-api" },
+    { "binding": "WORKER_SELF_REFERENCE", "service": "accounting-web" }
+  ],
+  // OpenNext のキャッシュ（設計書では NEXT_CACHE。OpenNext の KV キャッシュが要求する名前に合わせている）
+  "kv_namespaces": [{ "binding": "NEXT_INC_CACHE_KV", "id": "<KV_ID>" }],
+  "vars": {
+    // Cloudflare Access の設定（JWT の二重チェック）。値はデプロイ先に合わせて設定する
+    "CF_ACCESS_TEAM_DOMAIN": "",
+    "CF_ACCESS_AUD": ""
+  }
+}
