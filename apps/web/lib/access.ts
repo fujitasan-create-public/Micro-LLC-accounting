@@ -11,7 +11,10 @@ const jwksCache = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
  */
 export async function verifyAccess(request: Request): Promise<{ ok: true } | { ok: false; reason: string }> {
   if (process.env.NODE_ENV === "development") return { ok: true };
-  const { teamDomain, aud } = await accessConfig();
+  const { teamDomain, aud, localBypass } = await accessConfig();
+  // wrangler のローカル実行（.dev.vars で ACCESS_LOCAL_BYPASS=true）かつ localhost へのアクセスのときだけ省略する
+  const host = new URL(request.url).hostname;
+  if (localBypass && (host === "localhost" || host === "127.0.0.1")) return { ok: true };
   if (!teamDomain || !aud) return { ok: false, reason: "Cloudflare Access is not configured" };
   const token = request.headers.get("cf-access-jwt-assertion");
   if (!token) return { ok: false, reason: "missing access token" };

@@ -4,8 +4,8 @@
 90日より古いものは R2 のライフサイクルルールで削除する（バケット側で設定）。
 期限一覧（第7章）は api の GET /deadlines がその都度計算し、web のトップ画面に表示する。
 
-【要検証】Python Workers の scheduled ハンドラのシグネチャと、全テーブル読み出しの CPU 時間。
-収まらない場合は TABLES を分割し、Cron を複数に分ける。
+scheduled ハンドラは wrangler dev（workerd）で動作確認済み。
+【要検証】データ量が増えたときの全テーブル読み出しの CPU 時間。収まらない場合は TABLES を分割し、Cron を複数に分ける。
 """
 
 import json
@@ -31,7 +31,9 @@ async def dump_table(db, table: str) -> str:
     offset = 0
     while True:
         res = await db.prepare(f"SELECT * FROM {table} LIMIT ? OFFSET ?").bind(PAGE, offset).all()
-        rows = res.results.to_py()
+        rows = res.results
+        # SDK が Python のリストに変換済みの場合と、JsProxy のままの場合がある
+        rows = rows.to_py() if hasattr(rows, "to_py") else rows
         lines.extend(json.dumps(dict(r), ensure_ascii=False) for r in rows)
         if len(rows) < PAGE:
             break

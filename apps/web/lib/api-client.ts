@@ -20,15 +20,16 @@ export async function callApi(path: string, init: RequestInit = {}): Promise<Res
   return api.fetch(new Request(new URL(path, "https://accounting-api.internal"), init));
 }
 
-export async function accessConfig(): Promise<{ teamDomain?: string; aud?: string }> {
-  if (process.env.CF_ACCESS_AUD) {
-    return { teamDomain: process.env.CF_ACCESS_TEAM_DOMAIN, aud: process.env.CF_ACCESS_AUD };
-  }
+export async function accessConfig(): Promise<{ teamDomain?: string; aud?: string; localBypass?: boolean }> {
   try {
     const { env } = await getCloudflareContext({ async: true });
     const e = env as CloudflareEnv;
-    return { teamDomain: e.CF_ACCESS_TEAM_DOMAIN || undefined, aud: e.CF_ACCESS_AUD || undefined };
+    return {
+      teamDomain: e.CF_ACCESS_TEAM_DOMAIN || process.env.CF_ACCESS_TEAM_DOMAIN || undefined,
+      aud: e.CF_ACCESS_AUD || process.env.CF_ACCESS_AUD || undefined,
+      localBypass: e.ACCESS_LOCAL_BYPASS === "true",
+    };
   } catch {
-    return {};
+    return { teamDomain: process.env.CF_ACCESS_TEAM_DOMAIN, aud: process.env.CF_ACCESS_AUD };
   }
 }

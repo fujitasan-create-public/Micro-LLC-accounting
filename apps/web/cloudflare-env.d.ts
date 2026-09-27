@@ -3,4 +3,5 @@ interface CloudflareEnv {
   API?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
   CF_ACCESS_TEAM_DOMAIN?: string;
   CF_ACCESS_AUD?: string;
+  ACCESS_LOCAL_BYPASS?: string;
 }

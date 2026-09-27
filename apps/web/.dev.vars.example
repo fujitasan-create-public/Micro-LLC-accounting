@@ -1,0 +1,3 @@
+# wrangler でローカル実行（npm run preview）するときだけ使う設定。.dev.vars にコピーして使う（.dev.vars は Git 管理外）
+# localhost へのアクセスに限り、Cloudflare Access の確認を省略する
+ACCESS_LOCAL_BYPASS=true

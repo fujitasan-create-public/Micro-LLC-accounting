@@ -53,7 +53,7 @@ class LocalStorage:
 
 
 class R2Storage:
-    """【要検証】Pyodide からの R2 呼び出し。"""
+    """Pyodide から R2 を呼ぶ。wrangler dev（workerd）で読み書きを動作確認済み。"""
 
     def __init__(self, binding: Any):
         self._bucket = binding

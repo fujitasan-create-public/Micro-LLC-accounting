@@ -1,22 +1,24 @@
-# デプロイ（設計書 12.3）
-# wrangler.jsonc の <D1_ID> / <KV_ID> を実際の ID に置き換え、
-# GitHub Secrets に CLOUDFLARE_API_TOKEN と CLOUDFLARE_ACCOUNT_ID を登録してから手動で実行する。
-# 本番のマイグレーションの前に、画面「設定値・エクスポート」から手動エクスポート（FR-71）を実行すること。
-name: deploy
+# CI/CD（設計書 12.3）
+# - main への Push と Pull Request で、型チェック・ビルド・API の読み込み確認を行う
+# - main への Push では、続けて Cloudflare へ自動デプロイする（Cloudflare の設定が済んでいる場合のみ）
+#
+# 事前準備（README「Cloudflare へのデプロイ」を参照）
+#   Secrets:   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+#   Variables: D1_DATABASE_ID, KV_NAMESPACE_ID, CF_ACCESS_TEAM_DOMAIN, CF_ACCESS_AUD
+name: ci-cd
 
 on:
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: deploy
+  group: ci-cd-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
 jobs:
-  deploy:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,20 +31,81 @@ jobs:
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
 
-      - name: Test domain (pytest)
+      - name: API - import check and tests
         working-directory: apps/api
-        # テストが無い場合（終了コード 5）は成功として扱う
-        run: uv run pytest || [ $? -eq 5 ]
+        run: |
+          uv sync
+          uv run python -c "import sys; sys.path.insert(0, 'src'); import app_factory; app_factory.create_app()"
+          # テストが無い場合（終了コード 5）は成功として扱う
+          uv run pytest || [ $? -eq 5 ]
+
+      - name: Migrations and seed apply cleanly (SQLite)
+        run: |
+          python3 - <<'EOF'
+          import glob, sqlite3
+          c = sqlite3.connect(":memory:")
+          for f in sorted(glob.glob("migrations/*.sql")) + sorted(glob.glob("seed/*.sql")):
+              c.executescript(open(f, encoding="utf-8").read())
+          print("ok")
+          EOF
+
+      - name: Web - install, type check and build
+        working-directory: apps/web
+        run: |
+          npm ci
+          npx tsc --noEmit
+          npx opennextjs-cloudflare build
+
+  deploy:
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check Cloudflare settings
+        id: cf
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "${{ vars.D1_DATABASE_ID }}" ]; then
+            echo "Cloudflare の Secrets / Variables が未設定のため、デプロイを省略します。"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.cf.outputs.ready == 'true'
+
+      - uses: astral-sh/setup-uv@v6
+        if: steps.cf.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.cf.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Fill in resource IDs and Access settings
+        if: steps.cf.outputs.ready == 'true'
+        run: |
+          sed -i 's/<D1_ID>/${{ vars.D1_DATABASE_ID }}/' apps/api/wrangler.jsonc apps/jobs/wrangler.jsonc
+          sed -i 's/<KV_ID>/${{ vars.KV_NAMESPACE_ID }}/' apps/web/wrangler.jsonc
+          sed -i 's/"CF_ACCESS_TEAM_DOMAIN": ""/"CF_ACCESS_TEAM_DOMAIN": "${{ vars.CF_ACCESS_TEAM_DOMAIN }}"/; s/"CF_ACCESS_AUD": ""/"CF_ACCESS_AUD": "${{ vars.CF_ACCESS_AUD }}"/' apps/web/wrangler.jsonc
 
       - name: Install web dependencies
+        if: steps.cf.outputs.ready == 'true'
         working-directory: apps/web
         run: npm ci
 
       - name: Apply D1 migrations
+        if: steps.cf.outputs.ready == 'true'
         working-directory: apps/api
         run: npx --prefix ../web wrangler d1 migrations apply ledger --remote
 
       - name: Apply seed data (idempotent)
+        if: steps.cf.outputs.ready == 'true'
         working-directory: apps/api
         run: |
           for f in ../../seed/*.sql; do
@@ -50,13 +113,16 @@ jobs:
           done
 
       - name: Deploy api
+        if: steps.cf.outputs.ready == 'true'
         working-directory: apps/api
         run: uv run --group workers pywrangler deploy
 
       - name: Deploy jobs
+        if: steps.cf.outputs.ready == 'true'
         working-directory: apps/jobs
         run: uv run --group workers pywrangler deploy
 
       - name: Deploy web
+        if: steps.cf.outputs.ready == 'true'
         working-directory: apps/web
         run: npx opennextjs-cloudflare build && npx opennextjs-cloudflare deploy
