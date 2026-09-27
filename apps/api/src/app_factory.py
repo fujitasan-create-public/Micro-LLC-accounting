@@ -17,6 +17,7 @@ ROUTER_MODULES = [
     "routers.imports",
     "routers.sales_invoices",
     "routers.payroll",
+    "routers.housing",
 ]
 
 
