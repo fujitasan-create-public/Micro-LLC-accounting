@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import date
-from typing import Any
+from typing import Any, Callable
 
 from common import AppError, new_id, now_iso
 from db import Database
@@ -36,9 +36,12 @@ async def create_entry(
     attachment_ids: list[str] | None = None,
     reverses_entry_id: str | None = None,
     prebuilt: list[BuiltLine] | None = None,
-    extra_statements: list[tuple[str, list[Any]]] | None = None,
+    extra_statements: Callable[[str], list[tuple[str, list[Any]]]] | None = None,
 ) -> tuple[str, list[dict]]:
-    """仕訳を検証して1トランザクションで保存する。返り値は (仕訳ID, 警告)。"""
+    """仕訳を検証して1トランザクションで保存する。返り値は (仕訳ID, 警告)。
+
+    extra_statements には仕訳IDを受け取り、同じトランザクションで実行する SQL を返す関数を渡す。
+    """
     period = await resolve_period(db, transaction_date)
     company = await masters.get_company(db)
     method = company["accounting_tax_method"] if company else "tax_included"
@@ -101,7 +104,8 @@ async def create_entry(
         "tax_amount": bl.tax_amount, "deductible_rate_pct": bl.deductible_rate_pct,
     } for bl in built_lines]
     stmts = repo.entry_insert_statements(entry, line_rows, attachment_ids)
-    stmts.extend(extra_statements or [])
+    if extra_statements:
+        stmts.extend(extra_statements(entry_id))
     await db.batch(stmts)
     return entry_id, warnings
 

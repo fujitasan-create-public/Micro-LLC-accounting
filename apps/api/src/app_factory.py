@@ -14,6 +14,7 @@ ROUTER_MODULES = [
     "routers.settings",
     "routers.journals",
     "routers.attachments",
+    "routers.imports",
 ]
 
 
