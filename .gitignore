@@ -47,3 +47,6 @@ apps/api/.local/
 Thumbs.db
 .vscode/
 .idea/
+
+# ---- Claude Code のローカル設定 ----
+.claude/
