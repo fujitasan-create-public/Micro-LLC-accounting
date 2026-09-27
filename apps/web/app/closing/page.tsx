@@ -101,7 +101,7 @@ export default function ClosingPage() {
           </Card>
 
           <Card title="3. 法人税・地方税の概算（FR-62）">
-            <div className="alert alert-warn">概算です。{tax?.notice}</div>
+            <div className="alert alert-warn">{tax?.notice ?? "概算です。"}</div>
             {tax?.error ? <p>{tax.error}</p> : tax ? (
               <>
                 <table><tbody>
