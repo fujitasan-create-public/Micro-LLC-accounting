@@ -1,0 +1,25 @@
+[project]
+name = "accounting-api"
+version = "0.1.0"
+description = "Micro LLC accounting API (FastAPI on Cloudflare Python Workers)"
+requires-python = ">=3.11"
+# Workers 上（Pyodide）でも動くものに限定する（設計書 3.2）
+dependencies = [
+    "fastapi",
+    "pydantic",
+    "python-multipart",
+]
+
+[dependency-groups]
+dev = [
+    "uvicorn",
+    "pytest",
+]
+# Workers 上での確認・デプロイ用（uv sync --group workers）
+workers = [
+    "workers-py",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

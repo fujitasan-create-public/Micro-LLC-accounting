@@ -1,0 +1,21 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "accounting-api",
+  "main": "src/main.py",
+  "compatibility_date": "2026-09-27",
+  "compatibility_flags": ["python_workers"],
+  // 公開URLを持たせない（AD-04）。web からの Service Binding でのみ呼ばれる
+  "workers_dev": false,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ledger",
+      "database_id": "<D1_ID>",
+      "migrations_dir": "../../migrations"
+    }
+  ],
+  "r2_buckets": [
+    { "binding": "EVIDENCE", "bucket_name": "accounting-evidence" },
+    { "binding": "BACKUP", "bucket_name": "accounting-backup" }
+  ]
+}
