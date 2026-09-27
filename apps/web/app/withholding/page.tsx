@@ -50,9 +50,9 @@ export default function WithholdingPage() {
 
   return (
     <>
-      <PageTitle title="源泉所得税">納付期限の表示（FR-33 / BR-042）と、源泉徴収税額表の差し替え（FR-32 / NFR-07）</PageTitle>
+      <PageTitle title="源泉所得税">納付期限の表示と、源泉徴収税額表の差し替え</PageTitle>
       <ErrorBox error={error} />
-      <Card title="納期の特例（DM-13）">
+      <Card title="納期の特例">
         <label className="check">
           <input type="checkbox" checked={!!settings.data?.special_payment_deadline} onChange={(e) => toggleSpecial(e.target.checked)} />
           納期の特例の承認を受けている（1〜6月分は7月10日、7〜12月分は翌年1月20日が期限）

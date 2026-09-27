@@ -59,7 +59,7 @@ export default function RecurringPage() {
 
   return (
     <>
-      <PageTitle title="定型仕訳">役員報酬・社宅家賃・社会保険料など、毎月の定型仕訳をまとめて作成します（FR-14）。</PageTitle>
+      <PageTitle title="定型仕訳">役員報酬・社宅家賃・社会保険料など、毎月の定型仕訳をまとめて作成します。</PageTitle>
       <Card title="月次の作成">
         <div className="form">
           <Field label="対象月"><input type="month" value={ym} onChange={(e) => setYm(e.target.value)} /></Field>

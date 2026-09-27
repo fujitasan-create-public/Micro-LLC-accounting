@@ -9,9 +9,9 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
   {
     title: "日々の取引",
     items: [
-      ["/journals", "仕訳"],
+      ["/journals", "仕訳の一覧・検索"],
       ["/journals/new", "仕訳の入力"],
-      ["/attachments", "証憑"],
+      ["/attachments", "証憑（領収書・請求書）"],
       ["/imports", "明細CSVの取込"],
       ["/recurring", "定型仕訳"],
     ],
@@ -39,11 +39,13 @@ const GROUPS: { title: string; items: [string, string][] }[] = [
     items: [
       ["/setup", "初期設定"],
       ["/masters", "科目・取引先・口座"],
-      ["/settings", "設定値・エクスポート"],
+      ["/settings", "税率などの設定・エクスポート"],
+      ["/help", "ヘルプ"],
     ],
   },
 ];
 
+/** 上部ヘッダーと左メニュー。レイアウトのグリッドに直接並べる */
 export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -52,14 +54,20 @@ export function Nav() {
     .filter((h) => (h === "/" ? pathname === "/" : pathname === h || pathname.startsWith(h + "/")))
     .sort((a, b) => b.length - a.length)[0];
   return (
-    <nav className={`nav${open ? " open" : ""}`}>
-      <div className="brand">
-        <Link href="/">マイクロ法人会計</Link>
+    <>
+      <header className="header">
         <button className="nav-toggle" onClick={() => setOpen(!open)} aria-label="メニュー">
           ☰
         </button>
-      </div>
-      <div className="nav-body" onClick={() => setOpen(false)}>
+        <Link href="/" className="title">
+          マイクロ法人会計
+        </Link>
+        <span className="spacer" />
+        <Link href="/help" className="help">
+          ヘルプ
+        </Link>
+      </header>
+      <nav className={`sidebar${open ? " open" : ""}`} onClick={() => setOpen(false)}>
         {GROUPS.map((g) => (
           <div key={g.title || "home"} className="nav-group">
             {g.title ? <div className="nav-group-title">{g.title}</div> : null}
@@ -70,7 +78,7 @@ export function Nav() {
             ))}
           </div>
         ))}
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

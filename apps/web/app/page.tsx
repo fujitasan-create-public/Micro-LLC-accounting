@@ -34,7 +34,7 @@ export default function Home() {
       {status.data && !ready ? (
         <Notice>
           初期設定が完了していません。<Link href="/setup">初期設定</Link>
-          で会社情報・会計期間・消費税の設定を入力してください（FR-01）。
+          で会社情報・会計期間・消費税の設定を入力してください。
         </Notice>
       ) : null}
 
@@ -78,7 +78,7 @@ export default function Home() {
 
       <Card title="今後の期限（60日）">
         <ErrorBox error={deadlines.error} />
-        <DataTable columns={[["date", "期限"], ["title", "内容"], ["rule_id", "関連"], ["detail", "補足"]]} rows={deadlines.data?.items ?? []} />
+        <DataTable columns={[["date", "期限"], ["title", "内容"], ["detail", "補足"]]} rows={deadlines.data?.items ?? []} />
       </Card>
     </>
   );

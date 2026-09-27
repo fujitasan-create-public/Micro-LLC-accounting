@@ -58,7 +58,7 @@ export default function ImportsPage() {
 
   return (
     <>
-      <PageTitle title="明細CSVの取込">銀行・カードの明細CSVから仕訳の候補を作ります。摘要のキーワードで科目を推定するルールを登録できます（FR-13）。</PageTitle>
+      <PageTitle title="明細CSVの取込">銀行・カードの明細CSVから仕訳の候補を作ります。摘要のキーワードで科目を推定するルールを登録できます。</PageTitle>
       <Card title="1. CSVを読み込む">
         <form className="form" onSubmit={upload}>
           <Field label="口座・カード">

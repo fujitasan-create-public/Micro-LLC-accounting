@@ -52,7 +52,7 @@ export default function HousingPage() {
 
   return (
     <>
-      <PageTitle title="借上げ社宅">賃料相当額の計算（FR-40 / BR-081）、徴収額の不足の警告（FR-41）、家賃と徴収の仕訳（FR-42）</PageTitle>
+      <PageTitle title="借上げ社宅">賃料相当額の計算、徴収額の不足の警告、家賃と徴収の仕訳</PageTitle>
       <ErrorBox error={error} />
       <Warnings items={warnings} />
       {list.data?.items.map((h) => (
@@ -78,7 +78,7 @@ export default function HousingPage() {
           </div>
         </Card>
       ))}
-      <Card title="社宅の登録（DM-15）">
+      <Card title="社宅の登録">
         <form className="form" onSubmit={add}>
           <Field label="貸主（取引先）">
             <select value={form.landlord_id} onChange={set("landlord_id")} required>

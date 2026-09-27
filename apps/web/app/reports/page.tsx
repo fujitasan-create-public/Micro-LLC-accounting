@@ -17,12 +17,12 @@ export default function ReportsPage() {
 
   return (
     <>
-      <PageTitle title="帳票">帳簿・決算書・申告用の集計資料（OUT-01〜22）。印刷またはCSVで出力できます（FR-64）。</PageTitle>
+      <PageTitle title="帳票">帳簿・決算書・申告用の集計資料。印刷またはCSVで出力できます。</PageTitle>
       <Card>
         <div className="form no-print">
           <Field label="帳票">
             <select value={reportId} onChange={(e) => setReportId(e.target.value)}>
-              {reports.data?.items.map((r) => <option key={r.id} value={r.id}>{r.out_id} {r.title}</option>)}
+              {reports.data?.items.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
             </select>
           </Field>
           <Field label="会計期間"><PeriodSelect value={periodId} onChange={setPeriodId} /></Field>

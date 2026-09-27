@@ -37,7 +37,7 @@ export default function InvoicesPage() {
 
   return (
     <>
-      <PageTitle title="請求書">発行時に「売掛金／売上高」の仕訳を自動で作ります（FR-20）。印刷画面からPDFにできます（FR-21）。</PageTitle>
+      <PageTitle title="請求書">発行時に「売掛金／売上高」の仕訳を自動で作ります。印刷画面からPDFにできます。</PageTitle>
       <Card title="請求書の一覧">
         <div className="table-wrap">
           <table>
@@ -87,7 +87,7 @@ export default function InvoicesPage() {
               ))}
             </tbody>
           </table>
-          <p className="muted">税抜合計 {yen(net)}円（消費税は税率ごとに1回端数処理します: BR-023）</p>
+          <p className="muted">税抜合計 {yen(net)}円（消費税は税率ごとにまとめて端数処理します）</p>
           <div className="actions">
             <button type="button" onClick={() => setLines([...lines, { description: "", amount: "", tax_rate: "0.10" }])}>＋明細</button>
             <button className="primary">発行</button>

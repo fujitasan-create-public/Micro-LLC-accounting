@@ -36,7 +36,7 @@ export default function JournalsPage() {
 
   return (
     <>
-      <PageTitle title="仕訳">取引年月日・金額・取引先などを組み合わせて検索できます（FR-70）。</PageTitle>
+      <PageTitle title="仕訳">取引年月日・金額・取引先などを組み合わせて検索できます。</PageTitle>
       <Card title="検索" actions={<Link className="button primary" href="/journals/new">仕訳を入力</Link>}>
         <form className="form" onSubmit={(e) => { e.preventDefault(); setQuery({ ...filters }); }}>
           <Field label="取引日（から）"><input type="date" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} /></Field>
@@ -78,7 +78,7 @@ export default function JournalsPage() {
                   <td>{e.lines.filter((l: any) => l.side === "credit").map((l: any) => <div key={l.id}>{l.account_name}</div>)}</td>
                   <td className="num">{yen(e.total_amount)}</td>
                   <td><span className="badge">{SOURCE_LABELS[e.source] ?? e.source}</span></td>
-                  <td>{e.attachment_ids.map((a: string, i: number) => <a key={a} href={`/api/proxy/attachments/${a}/file`} target="_blank" rel="noreferrer">📎{i + 1} </a>)}</td>
+                  <td>{e.attachment_ids.map((a: string, i: number) => <a key={a} href={`/api/proxy/attachments/${a}/file`} target="_blank" rel="noreferrer">添付{i + 1} </a>)}</td>
                   <td className="actions">
                     <Link href={`/journals/new?copy=${e.id}`}>複製</Link>
                     {!e.voided_at && e.source !== "carryover" ? <button className="danger" onClick={() => voidEntry(e.id)}>取消</button> : null}

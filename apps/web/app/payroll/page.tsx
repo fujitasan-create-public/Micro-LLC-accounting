@@ -16,7 +16,7 @@ export default function PayrollPage() {
 
   return (
     <>
-      <PageTitle title="役員報酬・給与">改定履歴（FR-30）、月次の支給実績と仕訳の自動作成（FR-31, FR-32）</PageTitle>
+      <PageTitle title="役員報酬・給与">改定履歴、月次の支給実績と仕訳の自動作成</PageTitle>
       <OfficerForm officer={officer} onSaved={(id) => { officers.reload(); setOfficerId(id); }} />
       {officer ? (
         <>
@@ -52,7 +52,7 @@ function OfficerForm({ officer, onSaved }: { officer?: any; onSaved: (id: string
 
   return (
     <Card title="役員（代表社員）">
-      <Notice>マイナンバーは本システムに保存しません（NFR-05）。源泉徴収票などの提出時に別途記入してください。</Notice>
+      <Notice>マイナンバーは本システムに保存しません。源泉徴収票などの提出時に別途記入してください。</Notice>
       <form onSubmit={save}>
         <div className="form">
           <Field label="氏名"><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></Field>
@@ -99,7 +99,7 @@ function Compensations({ officerId }: { officerId: string }) {
   }
 
   return (
-    <Card title="役員報酬の改定履歴（FR-30 / BR-031）">
+    <Card title="役員報酬の改定履歴">
       <Warnings items={list.data?.warnings} />
       <DataTable
         columns={[["effective_from", "適用開始"], ["monthly_amount", "月額報酬"], ["payment_day", "支給日"], ["resolution_date", "社員総会の決定日"], ["reason", "改定理由"]]}
@@ -158,7 +158,7 @@ function PayrollEntry({ officerId }: { officerId: string }) {
   );
 
   return (
-    <Card title="給与支給実績（FR-31）" actions={<input type="number" className="num" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ width: 90 }} />}>
+    <Card title="給与支給実績" actions={<input type="number" className="num" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ width: 90 }} />}>
       <DataTable
         columns={[["pay_date", "支給日"], ["gross_amount", "総支給額"], ["health_insurance_employee", "健康保険"], ["pension_employee", "厚生年金"], ["withholding_income_tax", "源泉所得税"], ["resident_tax", "住民税"], ["company_housing_deduction", "社宅天引き"], ["net_amount", "差引支給額"]]}
         rows={list.data?.items ?? []}
@@ -173,7 +173,7 @@ function PayrollEntry({ officerId }: { officerId: string }) {
           {num("pension_employee", "厚生年金保険料（本人）")}
           {num("health_insurance_employer", "健康保険料（会社）")}
           {num("pension_employer", "厚生年金保険料（会社）")}
-          {num("withholding_income_tax", "源泉所得税", "空欄なら税額表から自動計算（FR-32）")}
+          {num("withholding_income_tax", "源泉所得税", "空欄なら税額表から自動計算")}
           {num("resident_tax", "住民税（特別徴収）")}
           {num("company_housing_deduction", "社宅家賃の天引き")}
           <Field label="支払口座">

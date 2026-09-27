@@ -81,7 +81,7 @@ export default function AssetsPage() {
 
   return (
     <>
-      <PageTitle title="固定資産">固定資産台帳（FR-50）と償却方法の候補（FR-51）、少額減価償却資産の特例の上限チェック（FR-52）</PageTitle>
+      <PageTitle title="固定資産">固定資産台帳と償却方法の候補、少額減価償却資産の特例の上限チェック</PageTitle>
       <ErrorBox error={error} />
       <Warnings items={warnings} />
       <Card title="固定資産台帳">
@@ -127,7 +127,7 @@ export default function AssetsPage() {
           <Field label="事業に使い始めた日" hint="償却の起点"><input type="date" value={form.service_start_date} onChange={(e) => setForm({ ...form, service_start_date: e.target.value })} required /></Field>
           <Field label="取得価額" hint="経理方式に応じて税込または税抜"><input type="number" className="num" value={form.acquisition_cost} onChange={(e) => setForm({ ...form, acquisition_cost: e.target.value })} required /></Field>
           <Field label="法定耐用年数"><input type="number" min={1} className="num" value={form.useful_life_years} onChange={(e) => setForm({ ...form, useful_life_years: e.target.value })} required /></Field>
-          <Field label="償却方法（BR-051 の候補）">
+          <Field label="償却方法">
             <select value={form.depreciation_method} onChange={(e) => setForm({ ...form, depreciation_method: e.target.value })} required>
               {options.length === 0 ? <option value="">取得価額と取得日を入力</option> : null}
               {options.map((o) => <option key={o} value={o}>{METHODS[o]}</option>)}

@@ -31,11 +31,11 @@ export default function SetupPage() {
   const status = useApi<any>("setup/status");
   return (
     <>
-      <PageTitle title="初期設定">会社設定・会計期間・消費税設定を入力します（FR-01）。</PageTitle>
+      <PageTitle title="初期設定">会社設定・会計期間・消費税設定を入力します。</PageTitle>
       {status.data?.completed ? (
         <Notice>
           初期設定は完了しています。設立初年度の開始残高（資本金の払込など）は<Link href="/journals/new?source=opening_balance">開始残高の入力</Link>
-          から登録できます（FR-03）。
+          から登録できます。
         </Notice>
       ) : null}
       <CompanyForm onSaved={status.reload} />
@@ -74,7 +74,7 @@ function CompanyForm({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <Card title="会社設定（DM-01）">
+    <Card title="会社設定">
       <form className="form" onSubmit={save}>
         <Field label="商号"><input value={form.trade_name} onChange={set("trade_name")} required /></Field>
         <Field label="法人番号（13桁）"><input value={form.corporate_number} onChange={set("corporate_number")} pattern="\d{13}" required /></Field>
@@ -102,7 +102,7 @@ function CompanyForm({ onSaved }: { onSaved: () => void }) {
         <Field label="市区町村"><input value={form.municipality} onChange={set("municipality")} required /></Field>
         <div className="actions field wide"><button className="primary">保存</button>{saved ? <span className="muted">保存しました</span> : null}</div>
       </form>
-      {data?.company ? <p className="muted small">中小法人の判定（BR-010）: {data.is_sme ? "中小法人" : "中小法人ではない"}</p> : null}
+      {data?.company ? <p className="muted small">中小法人の判定: {data.is_sme ? "中小法人" : "中小法人ではない"}</p> : null}
       <ErrorBox error={error} />
     </Card>
   );
@@ -129,7 +129,7 @@ function PeriodForm({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <Card title="会計期間（DM-03）">
+    <Card title="会計期間">
       <ul>
         {periods.data?.items.map((p) => (
           <li key={p.id}>
@@ -185,7 +185,7 @@ function ConsumptionTaxForm({ onSaved }: { onSaved: () => void }) {
   const hint = current.data?.status_hint;
 
   return (
-    <Card title="消費税設定（DM-02）">
+    <Card title="消費税設定">
       {!periods.data?.items.length ? <p className="muted">先に会計期間を追加してください。</p> : (
         <form className="form" onSubmit={save}>
           <Field label="対象の事業年度">
@@ -200,7 +200,7 @@ function ConsumptionTaxForm({ onSaved }: { onSaved: () => void }) {
             </select>
           </Field>
           <Field label="インボイス登録番号" hint="T＋13桁"><input value={form.invoice_registration_number} onChange={(e) => setForm({ ...form, invoice_registration_number: e.target.value })} pattern="T\d{13}" /></Field>
-          <Field label="計算方式" hint="2割特例は2026年9月30日を含む課税期間まで（BR-021）">
+          <Field label="計算方式" hint="2割特例は2026年9月30日を含む課税期間まで">
             <select value={form.calculation_method} onChange={(e) => setForm({ ...form, calculation_method: e.target.value })}>
               {["standard", "simplified", "two_tenths_special"].map((m) => (
                 <option key={m} value={m} disabled={!allowed.includes(m)}>{METHOD_LABELS[m]}{allowed.includes(m) ? "" : "（選択不可）"}</option>
@@ -222,7 +222,7 @@ function ConsumptionTaxForm({ onSaved }: { onSaved: () => void }) {
       )}
       {hint ? (
         <p className="muted small">
-          判定の補助（BR-020）: {hint.suggested === "taxable" ? "課税事業者" : hint.suggested === "exempt" ? "免税事業者" : "要確認"} — {hint.reasons.join(" ")}
+          判定の補助: {hint.suggested === "taxable" ? "課税事業者" : hint.suggested === "exempt" ? "免税事業者" : "要確認"} — {hint.reasons.join(" ")}
         </p>
       ) : null}
       <ErrorBox error={error} />

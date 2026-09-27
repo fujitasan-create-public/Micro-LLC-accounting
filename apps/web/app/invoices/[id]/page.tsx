@@ -39,7 +39,7 @@ export default function InvoiceDetail() {
         <button onClick={() => window.print()}>印刷・PDFに保存</button>
       </div>
       {!d.issuer_registration_number ? (
-        <div className="alert alert-warn no-print">発行者の登録番号が設定されていないため、適格請求書の要件（BR-023）を満たしません。初期設定の消費税設定で登録番号を入力してください。</div>
+        <div className="alert alert-warn no-print">発行者の登録番号が設定されていないため、適格請求書の要件を満たしません。初期設定の消費税設定で登録番号を入力してください。</div>
       ) : null}
 
       <div className="invoice">
@@ -89,7 +89,7 @@ export default function InvoiceDetail() {
       </div>
 
       <div className="no-print" style={{ marginTop: 16 }}>
-        <Card title="入金の消込（FR-22）">
+        <Card title="入金の消込">
           <p>請求額 {yen(d.total_amount)}円 ／ 入金済み {yen(d.received_amount)}円 ／ 振込手数料 {yen(d.bank_fee_deducted)}円 ／ 残高 <strong>{yen(d.remaining_amount)}円</strong></p>
           {d.receipts.length ? (
             <ul>{d.receipts.map((r: any) => <li key={r.id}>{r.received_date} 入金 {yen(r.received_amount)}円{r.bank_fee ? `（手数料 ${yen(r.bank_fee)}円）` : ""}</li>)}</ul>

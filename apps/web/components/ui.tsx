@@ -21,7 +21,7 @@ export function Card({ title, children, actions }: { title?: string; children: R
           {actions}
         </div>
       ) : null}
-      {children}
+      <div className="card-body">{children}</div>
     </section>
   );
 }
@@ -31,7 +31,6 @@ export function ErrorBox({ error }: { error: unknown }) {
   const e = error as ApiError;
   return (
     <div className="alert alert-error" role="alert">
-      {e.ruleId ? <span className="rule">{e.ruleId}</span> : null}
       {e.message ?? String(error)}
     </div>
   );
@@ -44,7 +43,6 @@ export function Warnings({ items }: { items?: Warning[] | null }) {
       <ul>
         {items.map((w, i) => (
           <li key={i}>
-            <span className="rule">{w.rule_id}</span>
             {w.message}
           </li>
         ))}

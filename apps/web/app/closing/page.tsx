@@ -34,7 +34,7 @@ export default function ClosingPage() {
   }
 
   async function close() {
-    if (!confirm("締め処理を行うと、この期間の仕訳は変更できなくなります（NFR-03）。実行しますか？")) return;
+    if (!confirm("締め処理を行うと、この期間の仕訳は変更できなくなります。実行しますか？")) return;
     await run(`fiscal-periods/${periodId}/close`, "締め処理");
   }
 
@@ -45,7 +45,7 @@ export default function ClosingPage() {
 
   return (
     <>
-      <PageTitle title="決算・締め">決算整理仕訳（FR-60）、消費税（FR-61）、法人税等の概算（FR-62）、締め処理と繰越（FR-63）</PageTitle>
+      <PageTitle title="決算・締め">決算整理仕訳、消費税、法人税等の概算、締め処理と繰越</PageTitle>
       <Card>
         <div className="form">
           <Field label="会計期間">
@@ -80,11 +80,11 @@ export default function ClosingPage() {
             </Card>
           </div>
 
-          <Card title="1. 減価償却費（FR-50）" actions={<Link href="/assets">固定資産へ</Link>}>
+          <Card title="1. 減価償却費" actions={<Link href="/assets">固定資産へ</Link>}>
             <button onClick={() => run(`fiscal-periods/${periodId}/depreciation`, "減価償却費")} disabled={period?.status === "closed"}>減価償却費の仕訳を作成</button>
           </Card>
 
-          <Card title="2. 消費税の納付額（FR-61）">
+          <Card title="2. 消費税の納付額">
             {ct?.error ? <p className="muted">{ct.error}</p> : ct?.taxable_status === "exempt" ? <p>{ct.message}</p> : ct ? (
               <>
                 <p>{ct.basis}</p>
@@ -100,7 +100,7 @@ export default function ClosingPage() {
             ) : null}
           </Card>
 
-          <Card title="3. 法人税・地方税の概算（FR-62）">
+          <Card title="3. 法人税・地方税の概算">
             <div className="alert alert-warn">{tax?.notice ?? "概算です。"}</div>
             {tax?.error ? <p>{tax.error}</p> : tax ? (
               <>
@@ -126,11 +126,11 @@ export default function ClosingPage() {
 
           <Carryover periodId={periodId} />
 
-          <Card title="5. 締め処理（FR-63）">
-            <p>締めた期間の仕訳は変更できなくなり、資産・負債・純資産の残高を翌期首に繰り越します。締めた期のデータはバックアップに保存します（NFR-01）。</p>
+          <Card title="5. 締め処理">
+            <p>締めた期間の仕訳は変更できなくなり、資産・負債・純資産の残高を翌期首に繰り越します。締めた期のデータはバックアップに保存します。</p>
             <div className="actions">
               <button className="primary" onClick={close} disabled={period?.status === "closed"}>この期間を締める</button>
-              <Link href="/reports">決算書・申告用の集計資料を出力（FR-64）</Link>
+              <Link href="/reports">決算書・申告用の集計資料を出力</Link>
             </div>
           </Card>
         </>
@@ -172,8 +172,8 @@ function Carryover({ periodId }: { periodId: string }) {
 
   if (!form) return null;
   return (
-    <Card title="4. 繰越情報（DM-17）">
-      {c.data?.interim_filing_required ? <div className="alert alert-warn">前期の法人税額が20万円を超えるため、法人税の中間申告が必要です（BR-092）。</div> : null}
+    <Card title="4. 繰越情報">
+      {c.data?.interim_filing_required ? <div className="alert alert-warn">前期の法人税額が20万円を超えるため、法人税の中間申告が必要です。</div> : null}
       <form onSubmit={save}>
         <div className="form">
           <Field label="前期の法人税額"><input type="number" className="num" value={form.prior_corporate_tax} onChange={(e) => setForm({ ...form, prior_corporate_tax: e.target.value })} /></Field>

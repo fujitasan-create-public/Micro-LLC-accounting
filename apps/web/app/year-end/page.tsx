@@ -56,8 +56,8 @@ export default function YearEndPage() {
 
   return (
     <>
-      <PageTitle title="年末調整">年末調整の計算（FR-34）。計算は概算です。源泉徴収票の記載内容は「帳票」から出力します（OUT-20）。</PageTitle>
-      <Card title="控除の入力（DM-14）" actions={<input type="number" className="num" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ width: 90 }} />}>
+      <PageTitle title="年末調整">年末調整の計算。計算は概算です。源泉徴収票の記載内容は「帳票」から出力します。</PageTitle>
+      <Card title="控除の入力" actions={<input type="number" className="num" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ width: 90 }} />}>
         <form onSubmit={save}>
           <div className="form">
             {num("general", "一般の生命保険料（年額）")}

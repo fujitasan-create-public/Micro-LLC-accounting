@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ja">
       <body>
-        <div className="shell">
+        <div className="app">
           <Nav />
           <main className="main">{children}</main>
         </div>

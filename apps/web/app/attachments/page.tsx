@@ -45,7 +45,7 @@ export default function AttachmentsPage() {
 
   return (
     <>
-      <PageTitle title="証憑">電子で受け取った請求書・領収書は電子データのまま保存します。取引年月日・金額・取引先で検索できます（BR-061, FR-70）。</PageTitle>
+      <PageTitle title="証憑">電子で受け取った請求書・領収書は電子データのまま保存します。取引年月日・金額・取引先で検索できます。</PageTitle>
       <Card title="証憑の保存">
         <form className="form" onSubmit={upload}>
           <Field label="ファイル（20MBまで）"><input type="file" required onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></Field>

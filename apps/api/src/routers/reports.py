@@ -450,7 +450,7 @@ async def consumption_tax_report(db, period, company, q):
     return {"sections": [
         section("税区分別・税率別・控除率別の集計", cols("tax_code:税区分", "name:名称", "rate:税率", "deductible:控除率", "debit:借方金額",
                                                      "credit:貸方金額", "debit_tax:借方税額", "credit_tax:貸方税額", "count:件数"), rows),
-        section("納付税額の計算（FR-61）", cols("item:項目", "amount:金額"), calc_rows),
+        section("納付税額の計算", cols("item:項目", "amount:金額"), calc_rows),
     ], "summary": result}
 
 

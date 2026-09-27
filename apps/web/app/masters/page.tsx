@@ -7,7 +7,7 @@ import { api, useApi } from "@/lib/client";
 export default function MastersPage() {
   return (
     <>
-      <PageTitle title="科目・取引先・口座">勘定科目の追加・名称変更・非表示（FR-02）、取引先（DM-06）、口座・支払手段（DM-07）</PageTitle>
+      <PageTitle title="科目・取引先・口座">勘定科目の追加・名称変更・非表示、取引先、口座・支払手段</PageTitle>
       <Counterparties />
       <PaymentAccounts />
       <Accounts />
@@ -147,7 +147,7 @@ function Counterparties() {
       <h3>{editing ? "取引先の編集" : "取引先の追加"}</h3>
       <form className="form" onSubmit={save}>
         <Field label="名称"><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></Field>
-        <Field label="種別" hint="個人への報酬は源泉徴収の警告が出ます（BR-041）">
+        <Field label="種別" hint="個人への報酬は源泉徴収の警告が出ます">
           <select value={form.entity_type} onChange={(e) => setForm({ ...form, entity_type: e.target.value })}>
             <option value="corporation">法人</option>
             <option value="individual">個人</option>
@@ -213,7 +213,7 @@ function PaymentAccounts() {
       <h3>口座・支払手段の追加</h3>
       <form className="form" onSubmit={add}>
         <Field label="表示名"><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></Field>
-        <Field label="種類" hint="役員による立替は役員借入金に紐付きます（FR-15）">
+        <Field label="種類" hint="役員による立替は役員借入金に紐付きます">
           <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value, linked_account_code: PA_TYPES[e.target.value][1] })}>
             {Object.entries(PA_TYPES).map(([k, [label]]) => <option key={k} value={k}>{label}</option>)}
           </select>

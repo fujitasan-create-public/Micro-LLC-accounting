@@ -52,9 +52,9 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageTitle title="設定値・エクスポート">税率・控除率・しきい値は適用期間つきの設定値として管理します（BR-000 / NFR-07）。</PageTitle>
+      <PageTitle title="税率などの設定・エクスポート">税率・控除率・しきい値は適用期間つきの設定値として管理します。</PageTitle>
       <ErrorBox error={error} />
-      <Card title="全データのエクスポート（FR-71 / NFR-04）">
+      <Card title="全データのエクスポート">
         <p>仕訳・マスタ・証憑をまとめて ZIP（JSON Lines・CSV・証憑ファイル）でダウンロードします。本番のマイグレーション前には必ず実行してください。</p>
         <button className="primary" onClick={exportAll} disabled={exporting}>{exporting ? "作成中…" : "エクスポート"}</button>
       </Card>

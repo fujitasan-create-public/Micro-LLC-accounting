@@ -11,8 +11,8 @@ type Line = { side: "debit" | "credit"; account_code: string; amount: string; ta
 const newLine = (side: "debit" | "credit"): Line => ({ side, account_code: "", amount: "", tax_code: "", tax_amount: "" });
 const SOURCE_TITLES: Record<string, string> = {
   manual: "仕訳の入力",
-  opening_balance: "開始残高の入力（FR-03）",
-  closing_adjustment: "決算整理仕訳の入力（FR-60）",
+  opening_balance: "開始残高の入力",
+  closing_adjustment: "決算整理仕訳の入力",
 };
 
 export default function NewJournalPage() {
@@ -139,15 +139,15 @@ function JournalForm() {
   return (
     <>
       <PageTitle title={SOURCE_TITLES[source] ?? "仕訳の入力"}>
-        借方と貸方の合計が一致しない仕訳は保存できません（FR-11）。税込経理では金額は税込で入力します。
+        借方と貸方の合計が一致しない仕訳は保存できません。税込経理では金額は税込で入力します。
       </PageTitle>
-      {copyId ? <Notice>元の仕訳を複製しました。訂正する場合は、元の仕訳を取り消してからこの内容で登録してください（NFR-02）。</Notice> : null}
+      {copyId ? <Notice>元の仕訳を複製しました。訂正する場合は、元の仕訳を取り消してからこの内容で登録してください。</Notice> : null}
       <Card>
         <form onSubmit={submit}>
           <div className="form">
             <Field label="取引日"><input type="date" value={date} onChange={(e) => setDate(e.target.value)} required /></Field>
             <Field label="摘要" wide><input value={description} onChange={(e) => setDescription(e.target.value)} required /></Field>
-            <Field label={`取引先${needsCp ? "（必須）" : ""}`} hint={cp && !cp.invoice_registration_number ? "インボイス登録番号なし: 課税仕入は経過措置の区分になります（FR-12）" : undefined}>
+            <Field label={`取引先${needsCp ? "（必須）" : ""}`} hint={cp && !cp.invoice_registration_number ? "インボイス登録番号なし: 課税仕入は経過措置の区分になります" : undefined}>
               <select value={counterpartyId} onChange={(e) => setCounterpartyId(e.target.value)} required={needsCp}>
                 <option value="">なし</option>
                 {cps.data?.items.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -196,10 +196,10 @@ function JournalForm() {
             <button type="button" onClick={() => setLines([...lines, newLine("debit")])}>＋借方</button>
             <button type="button" onClick={() => setLines([...lines, newLine("credit")])}>＋貸方</button>
           </div>
-          {willBeTransitional ? <Notice>取引先にインボイス登録番号がないため、保存時に課税仕入の税区分を経過措置（取引日に応じた控除率）に変更します（BR-022）。</Notice> : null}
+          {willBeTransitional ? <Notice>取引先にインボイス登録番号がないため、保存時に課税仕入の税区分を経過措置（取引日に応じた控除率）に変更します。</Notice> : null}
 
           {hasEntertainment ? (
-            <Card title="交際費の内容（FR-17 / BR-071）">
+            <Card title="交際費の内容">
               <div className="form">
                 <Field label="参加者（氏名・関係）" wide><input value={ent.participants} onChange={(e) => setEnt({ ...ent, participants: e.target.value })} placeholder="例: A社 山田部長、当社 代表社員" /></Field>
                 <Field label="人数"><input type="number" min={1} className="num" value={ent.headcount} onChange={(e) => setEnt({ ...ent, headcount: e.target.value })} /></Field>
@@ -211,7 +211,7 @@ function JournalForm() {
             </Card>
           ) : null}
 
-          <Card title="証憑の添付（FR-16）">
+          <Card title="証憑の添付">
             <div className="form">
               <Field label="ファイル（PDF・画像など、20MBまで）"><input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></Field>
               {file ? (
@@ -219,7 +219,7 @@ function JournalForm() {
                   <Field label="受領日"><input type="date" value={att.received_date} onChange={(e) => setAtt({ ...att, received_date: e.target.value })} /></Field>
                   <Field label="取引金額" hint="空欄なら仕訳の金額"><input type="number" className="num" value={att.amount} onChange={(e) => setAtt({ ...att, amount: e.target.value })} /></Field>
                   <Field label="取引先" hint="空欄なら仕訳の取引先"><input value={att.counterparty_name} onChange={(e) => setAtt({ ...att, counterparty_name: e.target.value })} /></Field>
-                  <Field label="受領方法" hint="電子で受け取ったものは電子データのまま保存します（BR-061）">
+                  <Field label="受領方法" hint="電子で受け取ったものは電子データのまま保存します">
                     <select value={att.receipt_channel} onChange={(e) => setAtt({ ...att, receipt_channel: e.target.value })}>
                       <option value="electronic">電子取引</option>
                       <option value="paper_scanned">紙をスキャン</option>
