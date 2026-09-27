@@ -19,6 +19,7 @@ ROUTER_MODULES = [
     "routers.payroll",
     "routers.housing",
     "routers.assets",
+    "routers.reports",
 ]
 
 
