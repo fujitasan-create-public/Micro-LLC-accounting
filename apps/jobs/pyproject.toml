@@ -1,0 +1,9 @@
+[project]
+name = "accounting-jobs"
+version = "0.1.0"
+description = "Daily backup job for Micro LLC accounting (Cloudflare Python Workers, Cron Trigger)"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+workers = ["workers-py"]

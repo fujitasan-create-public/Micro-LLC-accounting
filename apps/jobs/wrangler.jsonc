@@ -1,0 +1,15 @@
+{
+  "name": "accounting-jobs",
+  "main": "src/main.py",
+  "compatibility_date": "2026-09-27",
+  "compatibility_flags": ["python_workers"],
+  "workers_dev": false,
+  // UTC で指定。日本時間の毎日3時
+  "triggers": { "crons": ["0 18 * * *"] },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "ledger", "database_id": "<D1_ID>" }
+  ],
+  "r2_buckets": [
+    { "binding": "BACKUP", "bucket_name": "accounting-backup" }
+  ]
+}
