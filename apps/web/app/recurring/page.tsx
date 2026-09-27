@@ -12,7 +12,7 @@ export default function RecurringPage() {
   const cps = useApi<{ items: any[] }>("counterparties");
   const pas = useApi<{ items: any[] }>("payment-accounts");
   const [ym, setYm] = useState(todayIso().slice(0, 7));
-  const [form, setForm] = useState({ name: "", day_of_month: 25, description: "", counterparty_id: "", payment_account_id: "" });
+  const [form, setForm] = useState({ name: "", day_of_month: 25, description: "", counterparty_id: "", payment_account_id: "", start_month: todayIso().slice(0, 7), end_month: "", auto_post: true });
   const [lines, setLines] = useState<TLine[]>([
     { side: "debit", account_code: "", amount: "", tax_code: "" },
     { side: "credit", account_code: "", amount: "", tax_code: "" },
@@ -41,6 +41,7 @@ export default function RecurringPage() {
           ...form,
           counterparty_id: form.counterparty_id || null,
           payment_account_id: form.payment_account_id || null,
+          end_month: form.end_month || null,
           lines: lines.filter((l) => l.account_code).map((l) => ({ ...l, amount: Number(l.amount), tax_code: l.tax_code || null })),
         },
       });
@@ -50,8 +51,8 @@ export default function RecurringPage() {
     }
   }
 
-  async function toggle(id: string, active: boolean) {
-    await api(`recurring-templates/${id}`, { method: "PATCH", query: { is_active: active } });
+  async function patch(id: string, body: Record<string, unknown>) {
+    await api(`recurring-templates/${id}`, { method: "PATCH", body });
     templates.reload();
   }
 
@@ -59,8 +60,8 @@ export default function RecurringPage() {
 
   return (
     <>
-      <PageTitle title="定型仕訳">役員報酬・社宅家賃・社会保険料など、毎月の定型仕訳をまとめて作成します。</PageTitle>
-      <Card title="月次の作成">
+      <PageTitle title="定型仕訳">家賃・口座振替・サブスクリプションなど、毎月決まって発生する取引です。「自動」にしたものは、計上日が来ると自動で記帳されます。</PageTitle>
+      <Card title="手動で作成（「自動」にしていないもの・過去の月の分）">
         <div className="form">
           <Field label="対象月"><input type="month" value={ym} onChange={(e) => setYm(e.target.value)} /></Field>
           <button className="primary" onClick={generate}>この月の定型仕訳を作成</button>
@@ -71,14 +72,17 @@ export default function RecurringPage() {
       <Card title="テンプレート">
         <div className="table-wrap">
           <table>
-            <thead><tr><th>名前</th><th>日</th><th>摘要</th><th>明細</th><th>状態</th><th /></tr></thead>
+            <thead><tr><th>名前</th><th>毎月</th><th>期間</th><th>摘要</th><th>明細</th><th>記帳</th><th>状態</th><th /></tr></thead>
             <tbody>
               {templates.data?.items.map((t) => (
                 <tr key={t.id} className={t.is_active ? undefined : "voided"}>
-                  <td>{t.name}</td><td>{t.day_of_month}日</td><td>{t.description}</td>
+                  <td>{t.name}</td><td>{t.day_of_month}日</td><td className="small">{t.start_month ?? ""}〜{t.end_month ?? ""}</td><td>{t.description}</td>
                   <td>{t.lines.map((l: any, i: number) => <div key={i}>{l.side === "debit" ? "借" : "貸"} {accounts.data?.items.find((a) => a.code === l.account_code)?.name} {yen(l.amount)}</div>)}</td>
+                  <td>
+                    <label className="check"><input type="checkbox" checked={!!t.auto_post} onChange={(e) => patch(t.id, { auto_post: e.target.checked })} /> 自動</label>
+                  </td>
                   <td>{t.is_active ? "有効" : "停止"}</td>
-                  <td><button onClick={() => toggle(t.id, !t.is_active)}>{t.is_active ? "停止" : "再開"}</button></td>
+                  <td><button onClick={() => patch(t.id, { is_active: !t.is_active })}>{t.is_active ? "停止" : "再開"}</button></td>
                 </tr>
               ))}
             </tbody>
@@ -95,6 +99,11 @@ export default function RecurringPage() {
                 <option value="">なし</option>
                 {cps.data?.items.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
+            </Field>
+            <Field label="開始月"><input type="month" value={form.start_month} onChange={(e) => setForm({ ...form, start_month: e.target.value })} required /></Field>
+            <Field label="終了月（空欄なら期限なし）"><input type="month" value={form.end_month} onChange={(e) => setForm({ ...form, end_month: e.target.value })} /></Field>
+            <Field label="記帳のしかた">
+              <label className="check"><input type="checkbox" checked={form.auto_post} onChange={(e) => setForm({ ...form, auto_post: e.target.checked })} /> 計上日が来たら自動で記帳する</label>
             </Field>
             <Field label="支払元">
               <select value={form.payment_account_id} onChange={(e) => setForm({ ...form, payment_account_id: e.target.value })}>

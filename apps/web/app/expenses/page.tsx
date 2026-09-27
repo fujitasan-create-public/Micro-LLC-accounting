@@ -35,6 +35,10 @@ export default function ExpensesPage() {
   const pa = pas.data?.items.find((p) => p.id === form.payment_account_id);
   const cp = cps.data?.items.find((c) => c.id === form.counterparty_id);
   const amount = Number(form.amount) || 0;
+  // 役員報酬・減価償却費・法人税等は経費の一覧に含めない
+  const NOT_EXPENSE = ["500", "510", "620", "700"];
+  const expenseRows = (recent.data?.items ?? []).filter((e) =>
+    e.lines.some((l: any) => l.side === "debit" && !NOT_EXPENSE.includes(l.account_code) && l.account_code !== "160"));
   const perPerson = Number(ent.headcount) > 0 ? Math.floor(amount / Number(ent.headcount)) : null;
 
   async function addCounterparty() {
@@ -201,7 +205,7 @@ export default function ExpensesPage() {
           <table>
             <thead><tr><th>日付</th><th>勘定科目</th><th>内容</th><th>支払先</th><th>支払方法</th><th className="num">金額</th><th>領収書</th></tr></thead>
             <tbody>
-              {recent.data?.items.map((e) => (
+              {expenseRows.map((e) => (
                 <tr key={e.id}>
                   <td>{e.transaction_date}</td>
                   <td>{e.lines.filter((l: any) => l.side === "debit").map((l: any) => l.account_name).join("、")}</td>
@@ -215,7 +219,7 @@ export default function ExpensesPage() {
             </tbody>
           </table>
         </div>
-        {recent.data?.items.length === 0 ? <p className="muted">今月の経費はまだありません。</p> : null}
+        {recent.data && expenseRows.length === 0 ? <p className="muted">今月の経費はまだありません。</p> : null}
       </Card>
     </>
   );

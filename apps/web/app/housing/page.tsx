@@ -38,6 +38,16 @@ export default function HousingPage() {
     }
   }
 
+  async function automate(id: string) {
+    setError(null);
+    try {
+      const r = await api(`housings/${id}/automate`, { body: { payment_account_id: jr.payment_account_id, pay_day: jr.pay_day, start_month: jr.year_month } });
+      setWarnings([{ rule_id: "", message: `毎月${jr.pay_day}日に自動で記帳する設定を${r.template_ids.length}件登録しました（${jr.year_month}分から、契約終了まで）。ホーム画面を開いたときにも記帳されます。` }]);
+    } catch (err) {
+      setError(err);
+    }
+  }
+
   async function journals(id: string) {
     setError(null);
     try {
@@ -66,7 +76,7 @@ export default function HousingPage() {
           <Warnings items={h.imputed_rent.warnings} />
           <p className="muted small">貸主: {h.landlord_name} ／ 契約 {h.contract_start}〜{h.contract_end} ／ {h.floor_area_sqm}㎡ {h.structure === "wooden" ? "木造" : "非木造"} ／ 徴収方法: {h.collection_method === "payroll_deduction" ? "給与から天引き（給与の登録で処理）" : "振込"}</p>
           <div className="form">
-            <Field label="対象月"><input type="month" value={jr.year_month} onChange={(e) => setJr({ ...jr, year_month: e.target.value })} /></Field>
+            <Field label="対象月（自動の場合は開始月）"><input type="month" value={jr.year_month} onChange={(e) => setJr({ ...jr, year_month: e.target.value })} /></Field>
             <Field label="支払日"><input type="number" min={1} max={31} className="num" value={jr.pay_day} onChange={(e) => setJr({ ...jr, pay_day: Number(e.target.value) })} /></Field>
             <Field label="支払口座">
               <select value={jr.payment_account_id} onChange={(e) => setJr({ ...jr, payment_account_id: e.target.value })}>
@@ -74,7 +84,8 @@ export default function HousingPage() {
                 {pas.data?.items.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </Field>
-            <button className="primary" disabled={!jr.payment_account_id} onClick={() => journals(h.id)}>家賃の仕訳を作成（非課税）</button>
+            <button className="primary" disabled={!jr.payment_account_id} onClick={() => automate(h.id)}>この月から毎月自動で記帳する</button>
+            <button disabled={!jr.payment_account_id} onClick={() => journals(h.id)}>この月の分だけ記帳する</button>
           </div>
         </Card>
       ))}

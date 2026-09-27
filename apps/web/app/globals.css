@@ -74,10 +74,13 @@ code { font-family: Consolas, "MS Gothic", monospace; }
 .stat .value { font-size: 18px; font-weight: bold; font-variant-numeric: tabular-nums; text-align: right; }
 
 /* ---- フォーム ---- */
-.form { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: flex-end; }
+/* 上揃え。入力欄の下に補足があっても、横に並んだ入力欄の高さがずれないようにする */
+.form { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-start; }
+/* ラベルを持たないボタン・チェックボックスなどは、ラベル1行分下げて入力欄の高さにそろえる */
+.form > :not(.field) { margin-top: 21px; }
 .field { display: flex; flex-direction: column; gap: 2px; min-width: 180px; }
 .field.wide { flex-basis: 100%; }
-.field-label { font-size: 12px; color: #333; }
+.field-label { font-size: 12px; color: #333; line-height: 19px; min-height: 19px; white-space: nowrap; }
 .hint { font-size: 11px; color: var(--muted); }
 input, select, textarea { font: inherit; color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: 0; padding: 3px 6px; min-height: 30px; }
 input[type="checkbox"] { min-height: auto; width: 14px; height: 14px; }
@@ -85,6 +88,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 input[readonly], input:disabled, select:disabled { background: #f2f2f2; }
 input.num { text-align: right; font-variant-numeric: tabular-nums; }
 .check { display: inline-flex; align-items: center; gap: 5px; }
+.field > .check { min-height: 30px; }
 
 button, .button { font: inherit; border: 1px solid #8f9aa5; background: linear-gradient(#ffffff, #e8ecef); color: var(--text); border-radius: 2px; padding: 3px 14px; cursor: pointer; min-height: 28px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
 button:hover, .button:hover { background: linear-gradient(#ffffff, #dbe3ea); color: var(--text); }
@@ -93,6 +97,7 @@ button.primary:hover, .button.primary:hover { background: var(--accent-dark); co
 button.danger { color: var(--danger); }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.field.actions { flex-direction: row; }
 
 /* ---- メッセージ ---- */
 .alert { border: 1px solid; padding: 6px 10px; margin: 8px 0; }
@@ -145,3 +150,16 @@ tr.voided td { color: #999; text-decoration: line-through; }
 .invoice .total { font-size: 20px; font-weight: bold; border-bottom: 2px solid #000; display: inline-block; padding: 4px 0; margin: 8px 0 16px; }
 .invoice th { background: #f0f0f0; }
 @media print { .invoice { border: none; padding: 0; } }
+
+/* ---- グラフ ---- */
+.donut { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.legend { width: auto; min-width: 280px; }
+.legend td { border: none; border-bottom: 1px solid var(--border-light); padding: 4px 8px; }
+.legend tbody tr:nth-child(even) td, .legend tbody tr:hover td { background: none; }
+.swatch { display: inline-block; width: 12px; height: 12px; border: 2px solid; vertical-align: middle; }
+.chart-tip { position: absolute; top: 8px; transform: translateX(-50%); background: #fff; border: 1px solid var(--border); padding: 6px 10px; font-size: 12px; pointer-events: none; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); }
+.funds td, .funds th { border-left: none; border-right: none; }
+.funds tbody tr:nth-child(even) td { background: none; }
+.funds tr.total td { font-weight: bold; border-top: 2px solid var(--text); font-size: 15px; }
+.funds tr.sub td { color: var(--muted); }
+.hero { font-size: 26px; font-weight: bold; font-variant-numeric: tabular-nums; }
