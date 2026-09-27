@@ -16,6 +16,7 @@ ROUTER_MODULES = [
     "routers.attachments",
     "routers.imports",
     "routers.sales_invoices",
+    "routers.payroll",
 ]
 
 
