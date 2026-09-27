@@ -46,6 +46,10 @@ def _filters(f: dict[str, Any]) -> tuple[str, list[Any]]:
     if f.get("account"):
         where.append("EXISTS (SELECT 1 FROM journal_lines y WHERE y.entry_id = je.id AND y.account_code = ?)")
         params.append(f["account"])
+    if f.get("debit_category"):
+        where.append("""EXISTS (SELECT 1 FROM journal_lines y JOIN accounts ya ON ya.code = y.account_code
+                        WHERE y.entry_id = je.id AND y.side = 'debit' AND ya.category = ?)""")
+        params.append(f["debit_category"])
     if f.get("source"):
         where.append("je.source = ?")
         params.append(f["source"])

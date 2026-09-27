@@ -21,7 +21,7 @@ TABLES = [
     "journal_attachments", "import_rules", "recurring_templates", "recurring_runs", "sales_invoices",
     "sales_invoice_receipts", "officers", "officer_compensations", "payroll_records", "withholding_settings",
     "withholding_payments", "year_end_adjustments", "company_housings", "fixed_assets", "depreciation_runs",
-    "closing_carryovers", "audit_log",
+    "closing_carryovers", "documents", "audit_log",
 ]
 PAGE = 1000
 

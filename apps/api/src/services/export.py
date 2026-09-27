@@ -18,7 +18,7 @@ TABLES = [
     "journal_attachments", "import_rules", "recurring_templates", "recurring_runs", "sales_invoices",
     "sales_invoice_receipts", "officers", "officer_compensations", "payroll_records", "withholding_settings",
     "withholding_payments", "year_end_adjustments", "company_housings", "fixed_assets", "depreciation_runs",
-    "closing_carryovers", "audit_log",
+    "closing_carryovers", "documents", "audit_log",
 ]
 
 
@@ -50,10 +50,11 @@ async def build_zip(db: Database, evidence: ObjectStorage, include_files: bool =
             z.writestr(f"tables/{t}.jsonl", to_jsonl(rows))
             z.writestr(f"csv/{t}.csv", to_csv(rows))
         if include_files:
-            for a in await dump_table(db, "attachments"):
-                data = await evidence.get(a["r2_key"])
-                if data is not None:
-                    z.writestr(a["r2_key"], data)
+            for t in ("attachments", "documents"):
+                for a in await dump_table(db, t):
+                    data = await evidence.get(a["r2_key"])
+                    if data is not None:
+                        z.writestr(a["r2_key"], data)
         z.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
     return buf.getvalue()
 

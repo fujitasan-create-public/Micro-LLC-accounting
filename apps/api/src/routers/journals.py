@@ -64,6 +64,7 @@ async def search_journals(
     period_id: str | None = None,
     source: str | None = None,
     keyword: str | None = None,
+    debit_category: str | None = None,
     include_voided: bool = False,
     db: Database = Depends(get_db),
 ):
@@ -72,6 +73,7 @@ async def search_journals(
         "from": from_, "to": to, "amount_min": amount_min, "amount_max": amount_max,
         "counterparty": counterparty, "account": account, "period_id": period_id,
         "source": source, "keyword": keyword, "include_voided": include_voided,
+        "debit_category": debit_category,
     })
     return {"items": items}
 
