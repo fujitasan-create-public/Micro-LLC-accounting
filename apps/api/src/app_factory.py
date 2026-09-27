@@ -12,6 +12,8 @@ from db import DatabaseError
 
 ROUTER_MODULES = [
     "routers.settings",
+    "routers.journals",
+    "routers.attachments",
 ]
 
 
