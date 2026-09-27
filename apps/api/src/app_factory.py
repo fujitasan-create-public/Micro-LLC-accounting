@@ -20,6 +20,7 @@ ROUTER_MODULES = [
     "routers.housing",
     "routers.assets",
     "routers.reports",
+    "routers.closing",
 ]
 
 
